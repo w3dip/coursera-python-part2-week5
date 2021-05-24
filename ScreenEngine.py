@@ -30,12 +30,17 @@ class ScreenHandle(pygame.Surface):
             self.successor.draw(canvas)
 
     # FIXME connect_engine
+    def connect_engine(self, engine):
+        if self.successor is not None:
+            self.successor.connect_engine(engine)
 
 
 class GameSurface(ScreenHandle):
 
     def connect_engine(self, engine):
         # FIXME save engine and send it to next in chain
+        self.game_engine = engine
+        super().connect_engine(engine)
 
     def draw_hero(self):
         self.game_engine.hero.draw(self)
@@ -83,6 +88,7 @@ class GameSurface(ScreenHandle):
         self.draw_hero()
 
     # draw next surface in chain
+        super().draw(canvas)
 
 
 class ProgressBar(ScreenHandle):
@@ -93,6 +99,8 @@ class ProgressBar(ScreenHandle):
 
     def connect_engine(self, engine):
         # FIXME save engine and send it to next in chain
+        self.engine = engine
+        super().connect_engine(engine)
 
     def draw(self, canvas):
         self.fill(colors["wooden"])
@@ -147,6 +155,7 @@ class ProgressBar(ScreenHandle):
                   (550, 70))
 
     # draw next surface in chain
+        super().draw(canvas)
 
 
 class InfoWindow(ScreenHandle):
@@ -171,10 +180,13 @@ class InfoWindow(ScreenHandle):
 
     # FIXME
     # draw next surface in chain
+        super().draw(canvas)
 
     def connect_engine(self, engine):
         # FIXME set this class as Observer to engine and send it to next in
         # chain
+        engine.subscribe(self)
+        super().connect_engine(engine)
 
 
 class HelpWindow(ScreenHandle):
@@ -196,6 +208,8 @@ class HelpWindow(ScreenHandle):
 
     def connect_engine(self, engine):
         # FIXME save engine and send it to next in chain
+        self.engine = engine
+        super().connect_engine(engine)
 
     def draw(self, canvas):
         alpha = 0
@@ -215,3 +229,5 @@ class HelpWindow(ScreenHandle):
                           (150, 50 + 30 * i))
     # FIXME
     # draw next surface in chain
+        super().draw(canvas)
+

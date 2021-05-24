@@ -17,6 +17,12 @@ class Interactive(ABC):
     def interact(self, engine, hero):
         pass
 
+class AbstractObject(ABC):
+    def __init__(self):
+        pass
+
+    def draw(self, display):
+        pass
 
 class Ally(AbstractObject, Interactive):
 
@@ -127,3 +133,25 @@ class Effect(Hero):
 
 # FIXME
 # add classes
+class Enemy(Creature, Interactive):
+    def __init__(self, icon, stats, xp, position):
+        super().__init__(icon, stats, position)
+        self.xp = xp
+
+    def interact(self, engine, hero):
+        pass
+
+
+class Berserk(Effect):
+    def apply_effect(self):
+        pass
+
+
+class Blessing(Effect):
+    def apply_effect(self):
+        pass
+
+
+class Weakness(Effect):
+    def apply_effect(self):
+        pass
