@@ -25,6 +25,11 @@ ally:
     action: restore_hp
     min-count: 0
     max-count: 3
+  godheal:
+    sprite: [ NPC_4.png ]
+    action: mega_restore_hp
+    min-count: 0
+    max-count: 5
 enemies:
   rat:
     sprite: [rat.png]
@@ -47,6 +52,13 @@ enemies:
     intelligence: 25
     luck: 10
     experience: 500
+  king_naga:
+    sprite: [ King-Naga.png ]
+    strength: 35
+    endurance: 35
+    intelligence: 35
+    luck: 20
+    experience: 800
   dragon:
     sprite: [dragon.png]
     strength: 50

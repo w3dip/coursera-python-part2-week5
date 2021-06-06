@@ -96,6 +96,72 @@ class GameSurface(ScreenHandle):
         return (min_x, min_y)
 
 
+class MiniMap(ScreenHandle):
+
+    def connect_engine(self, engine):
+        self.game_engine = engine
+        return super().connect_engine(engine)
+
+    def draw_hero(self):
+        self.game_engine.hero.draw_scaled(self, self.scale)
+
+    def draw_map(self):
+
+        min_x = 0
+        min_y = 0
+
+        min_x, min_y = self.calculate(min_x, min_y)
+
+        if self.game_engine.map:
+            for i in range(len(self.game_engine.map[0]) - min_x):
+                for j in range(len(self.game_engine.map) - min_y):
+                    self.blit(self.game_engine.map[min_y + j][min_x + i][
+                              0], (i * int(self.game_engine.sprite_size/self.scale), j * int(self.game_engine.sprite_size/self.scale)))
+        else:
+            self.fill(colors["white"])
+
+    def draw_object(self, sprite, coord):
+        size = int(self.game_engine.sprite_size/self.scale)
+
+        min_x = 0
+        min_y = 0
+
+        min_x, min_y = self.calculate(min_x, min_y)
+
+        self.blit(sprite, ((coord[0] - min_x) * size,
+                           (coord[1] - min_y) * size))
+
+    def draw(self, canvas):
+        self.scale = 6
+        size = int(self.game_engine.sprite_size/self.scale)
+
+        min_x = 0
+        min_y = 0
+
+        min_x, min_y = self.calculate(min_x, min_y)
+
+        self.draw_map()
+        for obj in self.game_engine.objects:
+            image = obj.sprite[0]
+            image_w, image_h = image.get_size()
+            self.blit(pygame.transform.scale(image, (int(image_w/self.scale), int(image_h/self.scale))), ((obj.position[0] - min_x) * size,
+                                      (obj.position[1] - min_y) * size))
+        self.draw_hero()
+
+    # draw next surface in chain
+        return super().draw(canvas)
+
+    def calculate(self, min_x, min_y):
+        screen_size = list(self.get_size())
+        size = int(self.game_engine.sprite_size/self.scale)
+        screen_size[0] /= size
+        screen_size[1] /= size
+        hero_pos = self.game_engine.hero.position
+        min_x = int(max(0, hero_pos[0] - screen_size[0] + 3))
+        min_y = int(max(0, hero_pos[1] - screen_size[1] + 3))
+        return (min_x, min_y)
+
+
 class ProgressBar(ScreenHandle):
 
     def __init__(self, *args, **kwargs):
@@ -206,10 +272,9 @@ class HelpWindow(ScreenHandle):
         self.data.append(["Num+", "Zoom +"])
         self.data.append(["Num-", "Zoom -"])
         self.data.append([" R ", "Restart Game"])
-    # FIXME You can add some help information
+
 
     def connect_engine(self, engine):
-        # FIXME save engine and send it to next in chain
         self.engine = engine
         return super().connect_engine(engine)
 

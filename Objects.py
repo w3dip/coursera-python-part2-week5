@@ -23,6 +23,10 @@ class AbstractObject(ABC):
     def draw(self, display):
         display.draw_object(self.sprite, self.position)
 
+    def draw_scaled(self, display, scale):
+        image_w, image_h = self.sprite.get_size()
+        display.draw_object(pygame.transform.scale(self.sprite, (int(image_w/scale), int(image_h/scale))), self.position)
+
 class Ally(AbstractObject, Interactive):
 
     def __init__(self, icon, action, position):
@@ -171,3 +175,12 @@ class Weakness(Effect):
     def apply_effect(self):
         self.stats["endurance"] -= 8
         self.stats["strength"] -= 8
+
+
+class Rampage(Effect):
+    def apply_effect(self):
+        self.hp = self.base.hp + 500
+        self.stats["strength"] += 100
+        self.stats["endurance"] += 100
+        self.stats["intelligence"] += 100
+        self.stats["luck"] += 100
