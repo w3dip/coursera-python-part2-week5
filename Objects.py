@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import pygame
 import random
+import Service
 
 
 def create_sprite(img, sprite_size):
@@ -18,11 +19,9 @@ class Interactive(ABC):
         pass
 
 class AbstractObject(ABC):
-    def __init__(self):
-        pass
 
     def draw(self, display):
-        pass
+        display.draw_object(self.sprite, self.position)
 
 class Ally(AbstractObject, Interactive):
 
@@ -131,27 +130,44 @@ class Effect(Hero):
         pass
 
 
-# FIXME
-# add classes
 class Enemy(Creature, Interactive):
     def __init__(self, icon, stats, xp, position):
         super().__init__(icon, stats, position)
-        self.xp = xp
+        self.exp = xp
+        self.action = Service.add_gold
 
     def interact(self, engine, hero):
-        pass
+        hit = bool(random.getrandbits(1))
+        if hit:
+            hero.hp -= self.stats['strength']
+        if hero.hp <= 0:
+            engine.notify("GAME OVER")
+            engine.game_process = False
+        else:
+            hero.exp += self.exp
+            for m in hero.level_up():
+                engine.notify(m)
+            self.action(engine, hero)
 
 
 class Berserk(Effect):
     def apply_effect(self):
-        pass
+        self.hp = self.base.hp + 100
+        self.stats["strength"] += 10
+        self.stats["endurance"] += 10
+        self.stats["intelligence"] -= 5
+        self.stats["luck"] += 10
 
 
 class Blessing(Effect):
     def apply_effect(self):
-        pass
+        self.stats["luck"] += 5
+        self.stats["endurance"] += 5
+        self.stats["strength"] += 5
+        self.stats["intelligence"] += 5
 
 
 class Weakness(Effect):
     def apply_effect(self):
-        pass
+        self.stats["endurance"] -= 8
+        self.stats["strength"] -= 8
